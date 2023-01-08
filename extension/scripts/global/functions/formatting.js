@@ -28,58 +28,37 @@ function toSeconds(milliseconds) {
 }
 
 function textToTime(time, options = {}) {
+	let times = [1000,60*1000,60*60*1000,24*60*60*1000]
 	options = {
 		short: false,
 		...options,
 	};
-
 	let millis = 0;
-
 	if (time.includes(":")) {
 		const parts = time.split(":");
-
-		if (parts.length === 2) {
-			if (options.short) {
-				millis += parseInt(parts[0]) * TO_MILLIS.MINUTES;
-				millis += parseInt(parts[1]) * TO_MILLIS.SECONDS;
-			} else {
-				millis += parseInt(parts[0]) * TO_MILLIS.HOURS;
-				millis += parseInt(parts[1]) * TO_MILLIS.MINUTES;
-			}
-		} else if (parts.length === 3) {
-			millis += parseInt(parts[0]) * TO_MILLIS.HOURS;
-			millis += parseInt(parts[1]) * TO_MILLIS.MINUTES;
-			millis += parseInt(parts[2]) * TO_MILLIS.SECONDS;
-		} else if (parts.length === 4) {
-			millis += parseInt(parts[0]) * TO_MILLIS.DAYS;
-			millis += parseInt(parts[1]) * TO_MILLIS.HOURS;
-			millis += parseInt(parts[2]) * TO_MILLIS.MINUTES;
-			millis += parseInt(parts[3]) * TO_MILLIS.SECONDS;
+		let length = parts.length
+		if (options.short || parts.length > 2)
+			length -= 1
+		for(let i = 0; i<parts.length;i++){
+			millis+=parseInt(parts[i]) * times[length - i]
+			console.log(parseInt(parts[i]) * times[length - i])
 		}
+		
 	} else {
 		let group;
-		// noinspection JSUnusedAssignment
-		if (time.match(/(\d+) ?d/i)) {
-		  group = time.match(/(\d+) ?d/i);
-		  millis += parseInt(group[1]) * TO_MILLIS.DAYS;
+		if ((group = time.match(/(\d+) ?d/i))) {
+			millis += parseInt(group[1]) * 24 * 60 * 60 * 1000;
 		}
-
-		if (time.match(/(\d+) ?h/i)) {
-		  group = time.match(/(\d+) ?h/i);
-		  millis += parseInt(group[1]) * TO_MILLIS.HOURS;
+		if ((group = time.match(/(\d+) ?h/i))) {
+			millis += parseInt(group[1]) * 60 * 60 * 1000;
 		}
-
-		if (time.match(/(\d+) ?min/i)) {
-		  group = time.match(/(\d+) ?min/i);
-		  millis += parseInt(group[1]) * TO_MILLIS.MINUTES;
+		if ((group = time.match(/(\d+) ?min/i))) {
+			millis += parseInt(group[1]) * 60 * 1000;
 		}
-
-		if (time.match(/(\d+) ?s/i)) {
-		  group = time.match(/(\d+) ?s/i);
-		  millis += parseInt(group[1]) * TO_MILLIS.SECONDS;
+		if ((group = time.match(/(\d+) ?s/i))) {
+			millis += parseInt(group[1]) * 1000;
 		}
 	}
-
 	return millis;
 }
 
@@ -441,11 +420,14 @@ function applyPlural(check) {
 }
 
 function daySuffix(number) {
-	const last = number % 10,
-		double = number % 100;
-
-	if (last === 1 && double !== 11) return number + "st";
-	else if (last === 2 && double !== 12) return number + "nd";
-	else if (last === 3 && double !== 13) return number + "rd";
-	else return number + "th";
-}
+	let suffix = '';
+	if (number % 10 === 1 && number !== 11) {
+		suffix = 'st';
+	} else if (number % 10 === 2 && number !== 12) {
+		suffix = 'nd';
+	} else if (number % 10 === 3 && number !== 13) {
+		suffix = 'rd';
+	} else {
+		suffix = 'th';
+	}
+	return number + suffix;
