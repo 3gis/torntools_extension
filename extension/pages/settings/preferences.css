@@ -138,7 +138,7 @@ body.dark #tt-search-overlay #tt-search-button {
 	border-radius: 15px;
 	font-size: large;
 	/*noinspection CssNoGenericFontName*/
-	font-family: Arial;
+	font-family: Arial, sans-serif;
 	overflow-y: scroll;
 	overflow-wrap: break-word;
 	scrollbar-width: thin;
@@ -332,6 +332,40 @@ body.dark #preferences .sections {
 
 /* endregion */
 
+/* region Feature Manager */
+
+#featureDisplayDemo {
+	border: 1px solid lightgray;
+	border-radius: 10px;
+	padding: 3px;
+	width: 70px;
+	height: 40px;
+	position: relative;
+	margin-left: 40px;
+}
+
+#featureDisplayDemo input[type="radio"] {
+	position: absolute;
+}
+
+#featureDisplayDemo .top {
+	top: 1px;
+}
+
+#featureDisplayDemo .bottom {
+	bottom: 1px;
+}
+
+#featureDisplayDemo .left {
+	left: 1px;
+}
+
+#featureDisplayDemo .right {
+	right: 1px;
+}
+
+/* endregion */
+
 #preferences .tabbed {
 	padding-left: 20px;
 }
@@ -400,10 +434,6 @@ ul.list-table select {
 	background: #ddd;
 }
 
-#preferences #notification-sound-upload {
-	margin: 7.5px 15px;
-}
-
 /* - Companies / Faction */
 
 /* endregion */
@@ -419,14 +449,6 @@ ul.list-table select {
 /* region Specific Preferences */
 
 /* region Custom Links */
-
-#customLinks > li > input[type*="text"] {
-	width: 25%;
-}
-
-#customLinks > li > select {
-	width: 23.5%;
-}
 
 #customLinks .name {
 	max-width: 250px;

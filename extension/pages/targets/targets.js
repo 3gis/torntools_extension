@@ -152,19 +152,6 @@ async function setupAttackHistory() {
 			row.appendChild(document.newElement({ type: "td", class: "data respect", text: "-", attributes: { value: -1 } }));
 		}
 
-		if (data.latestFairFightModifier) {
-			row.appendChild(
-				document.newElement({
-					type: "td",
-					class: "data fair_fight",
-					text: data.latestFairFightModifier,
-					attributes: { value: data.latestFairFightModifier },
-				})
-			);
-		} else {
-			row.appendChild(document.newElement({ type: "td", class: "data fair_fight", text: "-", attributes: { value: -1 } }));
-		}
-
 		historyList.appendChild(row);
 	}
 }
@@ -216,164 +203,132 @@ async function setupStakeouts() {
 	}
 
 	function addStakeout(id, data = {}, showStatus = true) {
-		const row = document.newElement({ type: "tr", class: "row", id: `stakeout_${id}`, dataset: { id } });
+  const row = createStakeoutRowElement(id, data, showStatus);
+  const alerts = [];
+  appendDeleteButton(row, alerts);
+}
 
-		row.appendChild(
-			document.newElement({
-				type: "td",
-				class: "id",
-				children: [document.newElement({ type: "a", text: id, href: `https://www.torn.com/profiles.php?XID=${id}`, attributes: { target: "_blank" } })],
-			})
-		);
-		if (data && data.info && Object.keys(data.info).length) {
-			let statusValue;
-			switch (data.info.last_action.status.toLowerCase()) {
-				case "offline":
-					statusValue = 3;
-					break;
-				case "idle":
-					statusValue = 2;
-					break;
-				case "online":
-					statusValue = 1;
-					break;
-				default:
-					statusValue = 0;
-					break;
-			}
+function createStakeoutRowElement(id, data, showStatus) {
+  const row = document.newElement({ type: "tr", class: "row", id: `stakeout_${id}`, dataset: { id } });
+  appendIdColumn(row, id);
+  if (data && data.info && Object.keys(data.info).length) {
+    appendDataColumns(row, data);
+  } else {
+    if (showStatus) row.classList.add("new");
+    appendEmptyColumns(row);
+  }
+  return row;
+}
 
-			row.appendChild(
-				document.newElement({
-					type: "td",
-					class: "name",
-					children: [
-						document.newElement({
-							type: "a",
-							text: data.info.name,
-							href: `https://www.torn.com/profiles.php?XID=${id}`,
-							attributes: { target: "_blank" },
-						}),
-					],
-				})
-			);
-			row.appendChild(
-				document.newElement({
-					type: "td",
-					class: `status ${data.info.last_action.status.toLowerCase()}`,
-					text: data.info.last_action.status,
-					attributes: { value: statusValue },
-				})
-			);
-			row.appendChild(
-				document.newElement({
-					type: "td",
-					class: "last-action",
-					text: data.info.last_action.relative,
-					attributes: { value: Date.now() - data.info.last_action.timestamp },
-				})
-			);
-		} else {
-			if (showStatus) row.classList.add("new");
-			row.appendChild(document.newElement({ type: "td", class: "name", text: "" }));
-			row.appendChild(document.newElement({ type: "td", class: "status", text: "", attributes: { value: 0 } }));
-			row.appendChild(document.newElement({ type: "td", class: "last-action", text: "", attributes: { value: 0 } }));
-		}
+function appendIdColumn(row, id) {
+  row.appendChild(
+    document.newElement({
+      type: "td",
+      class: "id",
+      children: [
+        document.newElement({
+          type: "a",
+          text: id,
+          href: `https://www.torn.com/profiles.php?XID=${id}`,
+          attributes: { target: "_blank" },
+        }),
+      ],
+    })
+  );
+}
 
-		const deleteButton = document.newElement({
-			type: "button",
-			class: "delete",
-			children: [document.newElement({ type: "i", class: "remove-icon fas fa-trash-alt" })],
-		});
-		deleteButton.addEventListener("click", () => row.remove());
+function appendDataColumns(row, data) {
+  const nameColumn = document.newElement({
+    type: "td",
+    class: "name",
+    children: [
+      document.newElement({
+        type: "a",
+        text: data.info.name,
+        href: `https://www.torn.com/profiles.php?XID=${id}`,
+        attributes: { target: "_blank" },
+      }),
+    ],
+  });
+  const statusColumn = document.newElement({
+    type: "td",
+    class: `status ${data.info.last_action.status.toLowerCase()}`,
+    text: data.info.last_action.status,
+  });
+  setStatusColumnValue(statusColumn, data.info.last_action.status);
+  const lastActionColumn = document.newElement({
+    type: "td",
+    class: "last-action",
+    text: data.info.last_action.relative,
+  });
+  setLastActionColumnValue(lastActionColumn, data.info.last_action.timestamp);
+  row.append(nameColumn, statusColumn, lastActionColumn);
+}
 
-		row.appendChild(
-			document.newElement({
-				type: "td",
-				class: "delete-wrap",
-				children: [deleteButton],
-			})
-		);
+function setStatusColumnValue(column, status) {
+  let statusValue;
+  switch (status.toLowerCase()) {
+    case "offline":
+      statusValue = 3;
+      break;
+    case "idle":
+      statusValue = 2;
+      break;
+    case "online":
+      statusValue = 1;
+      break;
+    default:
+      statusValue = 0;
+      break;
+  }
+  column.setAttribute("value", statusValue);
+}
 
-		const alerts = [];
+function setLastActionColumnValue(column, timestamp) {
+  column.setAttribute("value", Date.now() - timestamp);
+}
 
-		alerts.push(
-			document.newElement({
-				type: "div",
-				children: [
-					document.newElement({ type: "input", id: `okay-${id}`, class: "okay", attributes: { type: "checkbox" } }),
-					document.newElement({ type: "label", attributes: { for: `okay-${id}` }, text: "is okay" }),
-				],
-			}),
-			document.newElement({
-				type: "div",
-				children: [
-					document.newElement({ type: "input", id: `hospital-${id}`, class: "hospital", attributes: { type: "checkbox" } }),
-					document.newElement({ type: "label", attributes: { for: `hospital-${id}` }, text: "is in hospital" }),
-				],
-			}),
-			document.newElement({
-				type: "div",
-				children: [
-					document.newElement({ type: "input", id: `landing-${id}`, class: "landing", attributes: { type: "checkbox" } }),
-					document.newElement({ type: "label", attributes: { for: `landing-${id}` }, text: "lands" }),
-				],
-			}),
-			document.newElement({
-				type: "div",
-				children: [
-					document.newElement({ type: "input", id: `online-${id}`, class: "online", attributes: { type: "checkbox" } }),
-					document.newElement({ type: "label", attributes: { for: `online-${id}` }, text: "comes online" }),
-				],
-			}),
-			document.newElement({
-				type: "div",
-				children: [
-					document.newElement({ type: "label", attributes: { for: `life-${id}` }, text: "life drops below " }),
-					document.newElement({ type: "input", id: `life-${id}`, class: "life short-input", attributes: { type: "number", min: 1, max: 100 } }),
-					document.newElement({ type: "label", attributes: { for: `life-${id}` }, text: " %" }),
-				],
-			}),
-			document.newElement({
-				type: "div",
-				children: [
-					document.newElement({ type: "label", attributes: { for: `offline-${id}` }, text: "offline for over " }),
-					document.newElement({ type: "input", id: `offline-${id}`, class: "offline short-input", attributes: { type: "number", min: 1 } }),
-					document.newElement({ type: "label", attributes: { for: `offline-${id}` }, text: " hours" }),
-				],
-			}),
-			document.newElement({
-				type: "div",
-				children: [
-					document.newElement({ type: "input", id: `revivable-${id}`, class: "revivable", attributes: { type: "checkbox" } }),
-					document.newElement({ type: "label", attributes: { for: `revivable-${id}` }, text: "is revivable" }),
-				],
-			})
-		);
+function appendEmptyColumns(row) {
+  const nameColumn = document.newElement({ type: "td", class: "name", text: "" });
+  const statusColumn = document.newElement({ type: "td", class: "status", text: "", value: 0 });
+  const lastActionColumn = document.newElement({ type: "td", class: "last-action", text: "", value: 0 });
+  row.append(nameColumn, statusColumn, lastActionColumn);
+}
 
-		const alertsWrap = document.newElement({ type: "td", class: "alerts-wrap", children: alerts });
-		row.appendChild(alertsWrap);
-
-		if (data && data.alerts) {
-			for (const key in data.alerts) {
-				if (!data.alerts[key]) continue;
-
-				const element = alertsWrap.find(`.${key}`);
-				if (!element) continue;
-
-				switch (typeof data.alerts[key]) {
-					case "boolean":
-						element.checked = true;
-						break;
-					case "number":
-					case "string":
-						element.value = data.alerts[key];
-						break;
-				}
-			}
-		}
-
-		stakeoutList.appendChild(row);
-	}
+function appendDeleteButton(row, alerts) {
+  const deleteButton = document.newElement({
+    type: "button",
+    class: "delete",
+    children: [document.newElement({ type: "i", class: "remove-icon fas fa-trash-alt" })],
+  });
+  deleteButton.addEventListener("click", () => row.remove());
+  row.appendChild(
+    document.newElement({
+      type: "td",
+      class: "delete-wrap",
+      children: [deleteButton],
+    })
+  );
+  alerts.push(
+    document.newElement({
+      type: "div",
+      children: [
+        ...(data.info.last_action.status.toLowerCase() === "online"
+          ? [document.newElement({ type: "span", class: "online", text: "Online" })]
+          : []),
+        ...(data.warnings.length
+          ? [
+              document.newElement({
+                type: "span",
+                class: "warnings",
+                text: `Warnings: ${data.warnings.length}`,
+              }),
+            ]
+          : []),
+      ],
+    })
+  );
+}
 
 	function updateStakeouts() {
 		[...stakeoutList.findAll("tr:not(.header)")]

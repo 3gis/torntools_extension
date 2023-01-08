@@ -1,5 +1,8 @@
+
+
 "use strict";
 
+console.log("lol")
 const SETUP_PAGES = {
 	initialize: setupInitialize,
 	dashboard: setupDashboard,
@@ -16,6 +19,7 @@ const LOAD_PAGES = {
 const initiatedPages = {};
 
 (async () => {
+	var date1 = Date.now();
 	document.body.style.minWidth = `${Math.min(416, screen.availWidth * 0.8)}px`;
 
 	showLoadingPlaceholder(document.body, true);
@@ -59,7 +63,13 @@ const initiatedPages = {};
 			document.find(".error").textContent = "";
 		}
 	}
+	var date2 = Date.now();
+	var diff = date2 - date1; //milliseconds interval
+	console.log(diff)
 })();
+
+
+
 
 async function showPage(name) {
 	document.find(`#${name}`).classList.add("active");
@@ -129,22 +139,21 @@ async function setupDashboard() {
 	dashboard.find("#mute-notifications i").classList.add(settings.notifications.types.global ? "fa-bell" : "fa-bell-slash");
 	dashboard.find("#mute-notifications span").textContent = settings.notifications.types.global ? "Notifications enabled" : "Notifications disabled";
 	dashboard.find("#mute-notifications").addEventListener("click", () => {
-		const newStatus = !settings.notifications.types.global;
+	const newStatus = !settings.notifications.types.global;
 
-		ttStorage.change({ settings: { notifications: { types: { global: newStatus } } } });
-
+	ttStorage.change({ settings: { notifications: { types: { global: newStatus } } } });
+		
+		dashboard.find("#mute-notifications").classList.remove("enabled");
+		dashboard.find("#mute-notifications").classList.add("disabled");
+		dashboard.find("#mute-notifications i").classList.remove("fa-bell");
+		dashboard.find("#mute-notifications i").classList.add("fa-bell-slash");
+		dashboard.find("#mute-notifications span").textContent = "Notifications disabled";
 		if (newStatus) {
 			dashboard.find("#mute-notifications").classList.add("enabled");
 			dashboard.find("#mute-notifications").classList.remove("disabled");
 			dashboard.find("#mute-notifications i").classList.add("fa-bell");
 			dashboard.find("#mute-notifications i").classList.remove("fa-bell-slash");
 			dashboard.find("#mute-notifications span").textContent = "Notifications enabled";
-		} else {
-			dashboard.find("#mute-notifications").classList.remove("enabled");
-			dashboard.find("#mute-notifications").classList.add("disabled");
-			dashboard.find("#mute-notifications i").classList.remove("fa-bell");
-			dashboard.find("#mute-notifications i").classList.add("fa-bell-slash");
-			dashboard.find("#mute-notifications span").textContent = "Notifications disabled";
 		}
 	});
 
@@ -352,7 +361,7 @@ async function setupDashboard() {
 		if (full_at === "full" || full_at === "over") full = "FULL";
 		else if (name === "chain" && bar.classList.contains("cooldown"))
 			full = `Cooldown over in ${formatTime({ seconds: toSeconds(full_at - current) }, { type: "timer", daysToHours: true })}`;
-		else if (name === "chain" || (name === "happy" && full_at === "over"))
+		else if (name === "chain" || (name === "happy")
 			full = `${formatTime({ seconds: toSeconds(full_at - current) }, { type: "timer", hideHours: true })}`;
 		else if (name === "traveling") full = `Landing in ${formatTime({ seconds: toSeconds(full_at - current) }, { type: "timer" })}`;
 		else {
@@ -498,6 +507,7 @@ async function setupDashboard() {
 }
 
 async function setupMarketSearch() {
+	var date1 = Date.now();
 	// setup itemlist
 	const itemSelection = document.find("#market .item-list");
 
@@ -624,7 +634,11 @@ async function setupMarketSearch() {
 			}
 			viewItem.find(".market").classList.remove("tt-hidden");
 		}
+
 	}
+	var date2 = Date.now();
+	var diff = date2 - date1; //milliseconds interval
+	console.log(diff)
 }
 
 async function loadMarketSearch() {
