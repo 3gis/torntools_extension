@@ -509,7 +509,7 @@ async function setupPreferences(requireCleanup) {
 	storageListeners.settings.push(updateSettings);
 	if (isIframe) {
 		window.addEventListener("message", async (event) => {
-			if (event.data !== null && typeof event.data === "object" && event.data.torntools) {
+			if (event.origin.includes("pages/settings/settings.html?page=preferences") && event.data !== null && typeof event.data === "object" && event.data.torntools) {
 				if (event.data.save) await saveSettings();
 				else if (event.data.revert) revertSettings();
 			}
@@ -1268,7 +1268,7 @@ async function setupPreferences(requireCleanup) {
 			["INPUT", "SELECT"].includes(event.target.tagName) ||
 			event.target.closest("button.remove-icon-wrap, #hide-icons, #hide-areas, #hide-casino-games, #hide-stocks, #hide-attack-options")
 		) {
-			if (isIframe) window.top.postMessage({ torntools: 1, show: 1 }, "*");
+			if (isIframe) window.top.postMessage({ torntools: 1, show: 1 });
 			else document.find("#saveSettingsBar").classList.remove("tt-hidden");
 		}
 	}
@@ -1864,7 +1864,7 @@ function formatBytes(bytes, options = {}) {
 	};
 
 	if (bytes === 0) return "0 bytes";
-	else if (bytes < 0) throw "Negative bytes are impossible";
+	else if (bytes < 0) throw new Error ("Negative bytes are impossible"+ 404);
 
 	const unitExponent = 1024;
 	const units = ["bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
