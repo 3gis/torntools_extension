@@ -105,7 +105,7 @@
 								events: {
 									click: () => {
 										document.getElementById("saveSettingsBar").classList.add("tt-hidden");
-										document.getElementById("tt-settings-iframe").contentWindow.postMessage({ torntools: 1, revert: 1 }, "*");
+										document.getElementById("tt-settings-iframe").contentWindow.postMessage({ torntools: 1, revert: 1 });
 									},
 								},
 							}),
@@ -116,7 +116,7 @@
 								events: {
 									click: () => {
 										document.getElementById("saveSettingsBar").classList.add("tt-hidden");
-										document.getElementById("tt-settings-iframe").contentWindow.postMessage({ torntools: 1, save: 1 }, "*");
+										document.getElementById("tt-settings-iframe").contentWindow.postMessage({ torntools: 1, save: 1 });
 									},
 								},
 							}),
