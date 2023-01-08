@@ -1,5 +1,3 @@
-
-
 "use strict";
 
 console.log("lol")
@@ -101,7 +99,7 @@ async function setupInitialize() {
 						document.find("#pages").classList.remove("tt-hidden");
 
 						if (granted) {
-							// await showPage(settings.pages.popup.defaultTab);
+							console.log(granted);
 						} else {
 							document.find(".permission-error").classList.remove("tt-hidden");
 							document.find(".permission-error").textContent = "Your API key is not the correct API level. This will affect a lot of features.";
@@ -179,7 +177,6 @@ async function setupDashboard() {
 
 			if (seconds <= 0) {
 				countdown.textContent = countdown.dataset.doneText || "Ready";
-				// delete countdown.dataset.seconds;
 				continue;
 			}
 
