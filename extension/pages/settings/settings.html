@@ -107,7 +107,7 @@
 						<li name="gym">Gym</li>
 						<li name="properties">Properties</li>
 						<li name="education">Education</li>
-						<li name="crimes">Crimes</li>
+						<!-- <li>Crimes</li> -->
 						<li name="missions">Missions</li>
 						<li name="userlist">Userlist</li>
 						<!-- <li>Newspaper</li> -->
@@ -132,7 +132,6 @@
 						<li name="itemmarket">Item Market</li>
 						<li name="museum">Museum</li>
 						<li name="api">API</li>
-						<li name="auction-house">Auction House</li>
 					</ul>
 				</nav>
 
@@ -146,6 +145,17 @@
 						<div class="option">
 							<input id="featureDisplay" type="checkbox" />
 							<label for="featureDisplay">Display running features on every page.</label>
+							<div id="featureDisplayDemo">
+								<!--suppress HtmlFormInputWithoutLabel -->
+								<input type="radio" name="featureDisplayPosition" value="top-left" class="top left" />
+								<!--suppress HtmlFormInputWithoutLabel -->
+								<input type="radio" name="featureDisplayPosition" value="top-right" class="top right" checked />
+								<!--suppress HtmlFormInputWithoutLabel -->
+								<input type="radio" name="featureDisplayPosition" value="bottom-left" class="bottom left" />
+								<!--suppress HtmlFormInputWithoutLabel -->
+								<input type="radio" name="featureDisplayPosition" value="bottom-right" class="bottom right" />
+							</div>
+							<span class="tabbed note">Position of container</span>
 						</div>
 						<div class="option tabbed">
 							<input id="featureDisplayOnlyFailed" type="checkbox" />
@@ -252,7 +262,6 @@
 								<option value="nuke">NUKE</option>
 								<option value="imperium">The Imperium</option>
 								<option value="hela">HeLa</option>
-								<option value="shadow_healers">Shadow Healers</option>
 							</select>
 							<label class="note" for="global-reviveProvider">Revives always cost $1m or 1 Xanax.</label>
 						</div>
@@ -802,10 +811,6 @@
 								This API key is optional. It's only required if you use a different key for YATA.
 							</label>
 						</div>
-						<div class="option">
-							<input id="external-prometheus" type="checkbox" />
-							<label for="external-prometheus">Connect to Prometheus.</label>
-						</div>
 					</section>
 					<section name="competition">
 						<div class="header">Competitions</div>
@@ -899,10 +904,6 @@
 							<label for="faction-memberInfo">Show money and points balance of members.</label>
 							<label for="faction-memberInfo" class="note tabbed">Requires faction API access.</label>
 						</div>
-						<div class="option">
-							<input id="faction-quickItems" type="checkbox" />
-							<label for="faction-quickItems">Quick items in the armory.</label>
-						</div>
 
 						<div class="header">OCs</div>
 						<div class="option">
@@ -933,10 +934,6 @@
 						<div class="option">
 							<input id="faction-ocTimes" type="checkbox" />
 							<label for="faction-ocTimes">Show OC times on the faction page.</label>
-						</div>
-						<div class="option">
-							<input id="faction-ocLastAction" type="checkbox" />
-							<label for="faction-ocLastAction">Show last action on OC details.</label>
 						</div>
 
 						<div class="header">Faction Member Inactivity Warning</div>
@@ -1031,13 +1028,6 @@
 						<div class="option">
 							<input id="items-nerveGains" type="checkbox" />
 							<label for="items-nerveGains">Show alcohol nerve gains.</label>
-						</div>
-					</section>
-					<section name="crimes">
-						<div class="header">Crimes</div>
-						<div class="option">
-							<input id="crimes-quickCrimes" type="checkbox" />
-							<label for="crimes-quickCrimes">Show the quick crimes container.</label>
 						</div>
 					</section>
 					<section name="city">
@@ -1418,11 +1408,6 @@
 							<input id="attack-timeoutWarning" type="checkbox" />
 							<label for="attack-timeoutWarning">Play a sound when the time on your attack drops below 30 seconds.</label>
 						</div>
-						<div class="option">
-							<input id="attack-fairAttack" type="checkbox" />
-							<label for="attack-fairAttack">Show FF modifier.</label>
-							<label class="note" for="attack-fairAttack">Requires attack history to be kept.</label>
-						</div>
 
 						<div class="header extra-mb">Hide Attack Options</div>
 						<div id="hide-attack-options" class="hide-items"></div>
@@ -1487,13 +1472,6 @@
 						<div class="option">
 							<input id="bounties-filter" type="checkbox" />
 							<label for="bounties-filter">Show bounty filter.</label>
-						</div>
-					</section>
-					<section name="auction-house">
-						<div class="header">Auction House</div>
-						<div class="option">
-							<input id="auction-filter" type="checkbox" />
-							<label for="auction-filter">Filter items in the auction house.</label>
 						</div>
 					</section>
 
@@ -1722,8 +1700,7 @@
 						<ul>
 							<li>NNB: 1 hour</li>
 							<li>Bank interest: till new day</li>
-							<li>Profile Box - stats: 6 hours</li>
-							<li>Profile Box - spy report: 1 day, or 6 hours if the result is over 31 days old, or 1 hour if there is no result</li>
+							<li>Profile Box - stats: 6 hour</li>
 							<li>Stats Estimate: 7 days, or 31 days if 'over 200' or inactive for over 180 days, or 1 day if not able to calculate it</li>
 						</ul>
 					</li>

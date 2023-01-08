@@ -5,7 +5,7 @@ const initiatedPages = {};
 (async () => {
 	initializeInternalPage({ sortTables: true });
 	await loadDatabase();
-	await showPage(getSearchParameters().get("page") || "preferences");
+	await showPage(getSearchParameters().get("page") || "changelog");
 
 	document.body.classList.add(getPageTheme());
 
@@ -191,7 +191,7 @@ function cleanupPreferences() {
 				"#allyFactions > li:not(.input)",
 				"#userAlias > li:not(.input)",
 				"#chatHighlight > li:not(.input)",
-				"#chatTitleHighlight> li:not(.input)",
+				"#chatTitleHighlight> li:not(input)",
 			].join(", ")
 		)
 		.forEach((element) => element.remove());
@@ -199,7 +199,6 @@ function cleanupPreferences() {
 
 async function setupPreferences(requireCleanup) {
 	if (requireCleanup) cleanupPreferences();
-	searchPreferences();
 
 	const _preferences = document.find("#preferences");
 	_preferences.addEventListener("click", addSaveDialog);
@@ -309,7 +308,7 @@ async function setupPreferences(requireCleanup) {
 		reader.readAsDataURL(event.target.files[0]);
 	});
 
-	new Sortable(_preferences.find("#customLinks"), {
+	var sortable = new Sortable(_preferences.find("#customLinks"), {
 		draggable: "li:not(.input)",
 		handle: ".move-icon-wrap",
 		ghostClass: "dragging",
@@ -323,9 +322,7 @@ async function setupPreferences(requireCleanup) {
 		// noinspection DuplicatedCode
 		if (event.target.value === "custom") {
 			hrefInput.classList.remove("tt-hidden");
-			hrefInput.value = "";
 			nameInput.classList.remove("tt-hidden");
-			nameInput.value = "";
 		} else {
 			hrefInput.classList.add("tt-hidden");
 			nameInput.classList.add("tt-hidden");
@@ -395,7 +392,7 @@ async function setupPreferences(requireCleanup) {
 		const iconsWrap = document.newElement({
 			type: "div",
 			class: "icon",
-			children: [document.newElement({ type: "div", class: icon, style: { backgroundPosition: `-${(id - 1) * 18}px 0` } })],
+			children: [document.newElement({ type: "div", style: { backgroundPosition: `-${(id - 1) * 18}px 0` } })],
 		});
 		iconsWrap.classList.add("hover_tooltip");
 		iconsWrap.appendChild(document.newElement({ type: "span", class: "hover_tooltip_text", text: description }));
@@ -479,7 +476,6 @@ async function setupPreferences(requireCleanup) {
 
 	_preferences.find("#external-tornstats").addEventListener("click", (event) => requestOrigin(FETCH_PLATFORMS.tornstats, event));
 	_preferences.find("#external-yata").addEventListener("click", (event) => requestOrigin(FETCH_PLATFORMS.yata, event));
-	_preferences.find("#external-prometheus").addEventListener("click", (event) => requestOrigin(FETCH_PLATFORMS.prometheus, event));
 
 	_preferences.find("#global-reviveProvider").addEventListener("change", (event) => {
 		const provider = event.target.value;
@@ -490,7 +486,6 @@ async function setupPreferences(requireCleanup) {
 		else if (provider === "uhc") origin = FETCH_PLATFORMS.uhc;
 		else if (provider === "imperium") origin = FETCH_PLATFORMS.imperium;
 		else if (provider === "hela") origin = FETCH_PLATFORMS.hela;
-		else if (provider === "shadow_healers") origin = FETCH_PLATFORMS.shadow_healers;
 
 		if (!origin) return;
 
@@ -510,6 +505,7 @@ async function setupPreferences(requireCleanup) {
 
 	fillSettings();
 	requestPermissions();
+	searchPreferences();
 	storageListeners.settings.push(updateSettings);
 	if (isIframe) {
 		window.addEventListener("message", async (event) => {
@@ -548,8 +544,9 @@ async function setupPreferences(requireCleanup) {
 		_preferences.find(`input[name="formatTime"][value="${settings.formatting.time}"]`).checked = true;
 		_preferences.find(`input[name="themePage"][value="${settings.themes.pages}"]`).checked = true;
 		_preferences.find(`input[name="themeContainers"][value="${settings.themes.containers}"]`).checked = true;
+		_preferences.find(`input[name="featureDisplayPosition"][value="${settings.featureDisplayPosition}"]`).checked = true;
 
-		for (const service of ["tornstats", "yata", "prometheus"]) {
+		for (const service of ["tornstats", "yata"]) {
 			_preferences.find(`#external-${service}`).checked = settings.external[service];
 		}
 
@@ -640,6 +637,7 @@ async function setupPreferences(requireCleanup) {
 		_preferences.find("#notification-volume").value = settings.notifications.volume;
 		if (settings.notifications.sound === "custom") {
 			_preferences.find("#notification-sound-upload").classList.remove("tt-hidden");
+			_preferences.find("#notification-sound-upload + br").classList.remove("tt-hidden");
 		} else {
 			if (settings.notifications.sound === "mute" || settings.notifications.sound === "default") {
 				_preferences.find("#notification-volume").classList.add("tt-hidden");
@@ -930,12 +928,12 @@ async function setupPreferences(requireCleanup) {
 		settings.formatting.time = _preferences.find("input[name='formatTime']:checked").value;
 		settings.themes.pages = _preferences.find("input[name='themePage']:checked").value;
 		settings.themes.containers = _preferences.find("input[name='themeContainers']:checked").value;
+		settings.featureDisplayPosition = _preferences.find("input[name='featureDisplayPosition']:checked").value;
 
 		settings.csvDelimiter = _preferences.find("#csvDelimiter").value;
 
 		settings.external.tornstats = _preferences.find("#external-tornstats").checked;
 		settings.external.yata = _preferences.find("#external-yata").checked;
-		settings.external.prometheus = _preferences.find("#external-prometheus").checked;
 
 		for (const type of ["pages", "scripts"]) {
 			for (const page in settings[type]) {
@@ -1229,7 +1227,6 @@ async function setupPreferences(requireCleanup) {
 		for (const { id, origin } of [
 			{ id: "external-tornstats", origin: FETCH_PLATFORMS.tornstats },
 			{ id: "external-yata", origin: FETCH_PLATFORMS.yata },
-			{ id: "external-prometheus", origin: FETCH_PLATFORMS.prometheus },
 		]) {
 			if (!_preferences.find(`#${id}`)?.checked) continue;
 
@@ -1243,7 +1240,6 @@ async function setupPreferences(requireCleanup) {
 			else if (reviveProvider === "uhc") origin = FETCH_PLATFORMS.uhc;
 			else if (reviveProvider === "imperium") origin = FETCH_PLATFORMS.imperium;
 			else if (reviveProvider === "hela") origin = FETCH_PLATFORMS.hela;
-			else if (reviveProvider === "shadow_healers") origin = FETCH_PLATFORMS.shadow_healers;
 
 			if (origin) origins.push(origin);
 		}
@@ -1439,24 +1435,21 @@ async function setupAPIInfo() {
 	});
 	await ttUsage.refresh();
 
-	document.find("#update-torndata").addEventListener("click", () =>
-		chrome.runtime.sendMessage({ action: "forceUpdate", update: "torndata" }, (result) => {
-			console.log("Manually fetched torndata.", result);
-			sendMessage("Fetched torndata.", true);
-		})
-	);
-	document.find("#update-stocks").addEventListener("click", () =>
-		chrome.runtime.sendMessage({ action: "forceUpdate", update: "stocks" }, (result) => {
-			console.log("Manually fetched stocks.", result);
-			sendMessage("Fetched stocks.", true);
-		})
-	);
-	document.find("#update-factiondata").addEventListener("click", () =>
-		chrome.runtime.sendMessage({ action: "forceUpdate", update: "factiondata" }, (result) => {
-			console.log("Manually fetched factiondata.", result);
-			sendMessage("Fetched factiondata.", true);
-		})
-	);
+	document
+		.find("#update-torndata")
+		.addEventListener("click", () =>
+			chrome.runtime.sendMessage({ action: "forceUpdate", update: "torndata" }, (result) => console.log("Manually fetched torndata.", result))
+		);
+	document
+		.find("#update-stocks")
+		.addEventListener("click", () =>
+			chrome.runtime.sendMessage({ action: "forceUpdate", update: "stocks" }, (result) => console.log("Manually fetched stocks.", result))
+		);
+	document
+		.find("#update-factiondata")
+		.addEventListener("click", () =>
+			chrome.runtime.sendMessage({ action: "forceUpdate", update: "factiondata" }, (result) => console.log("Manually fetched factiondata.", result))
+		);
 
 	updateUsage(usageChart, "Last 5");
 	document.find(".current-usage .buttons .last-5").addEventListener("click", () => updateUsage(usageChart, "Last 5"));
