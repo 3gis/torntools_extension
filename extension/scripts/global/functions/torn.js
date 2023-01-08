@@ -831,22 +831,22 @@ const COMPANY_INFORMATION = {
 		3: {
 			name: "Organized",
 			cost: "Passive",
-			effect: "2 additional open mission contracts",
+			effect: "Increases available open contracts from 3 to 5",
 		},
 		5: {
 			name: "Repatriated",
 			cost: "Passive",
-			effect: "Return from abroad while in hospital",
+			effect: "Allows traveling back to Torn from abroad while in hospital",
 		},
 		7: {
 			name: "Contraband",
 			cost: "50",
-			effect: "Shipment of foreign goods",
+			effect: "Large quantity of a foreign item",
 		},
 		10: {
 			name: "Logistics Report",
 			cost: "250",
-			effect: "Company productivity boost",
+			effect: "Targeted company productivity boost",
 		},
 	},
 	"Meat Warehouse": {
@@ -1325,7 +1325,6 @@ const SPECIAL_FILTER_ICONS = {
 	isDonator: ["icon3", "icon4"],
 	inHospital: ["icon15"],
 	inJail: ["icon16"],
-	fallen: ["icon77"],
 };
 
 const CHAIN_BONUSES = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000];
@@ -1344,35 +1343,6 @@ const LINKS = {
 	organizedCrimes: "https://www.torn.com/factions.php?step=your#/tab=crimes",
 	gym: "https://www.torn.com/gym.php",
 };
-
-const ITEM_TYPES = [
-	"Melee",
-	"Secondary",
-	"Primary",
-	"Defensive",
-	"Candy",
-	"Electronic",
-	"Clothing",
-	"Jewelry",
-	"Other",
-	"Medical",
-	"Virus",
-	"Collectible",
-	"Car",
-	"Flower",
-	"Booster",
-	"Unused",
-	"Alcohol",
-	"Plushie",
-	"Drug",
-	"Temporary",
-	"Special",
-	"Supply Pack",
-	"Enhancer",
-	"Artifact",
-	"Energy Drink",
-	"Book",
-];
 
 function getNextChainBonus(current) {
 	return CHAIN_BONUSES.find((bonus) => bonus > current);
@@ -1543,7 +1513,6 @@ function createMessageBox(content, options = {}) {
 
 const REACT_UPDATE_VERSIONS = {
 	DEFAULT: "default",
-	DOUBLE_DEFAULT: "doubleDefault",
 	NATIVE_SETTER: "nativeSetter",
 };
 
@@ -1573,11 +1542,6 @@ function updateReactInput(input, value, options = {}) {
 
 			input.dispatchEvent(new Event("input", { bubbles: true }));
 			break;
-		case REACT_UPDATE_VERSIONS.DOUBLE_DEFAULT:
-			input.value = value;
-			input.dispatchEvent(new Event("input", { bubbles: true }));
-			input.dispatchEvent(new Event("change", { bubbles: true }));
-			break;
 		case REACT_UPDATE_VERSIONS.DEFAULT:
 		default:
 			input.value = value;
@@ -1587,7 +1551,7 @@ function updateReactInput(input, value, options = {}) {
 }
 
 function isDividendStock(id) {
-	if (isIntNumber(id)) return [1, 4, 5, 6, 7, 9, 10, 12, 15, 16, 17, 18, 19, 22, 24, 27, 28, 29, 31, 32, 33, 35].includes(id);
+	if (isIntNumber(id)) return [1, 4, 5, 6, 7, 9, 10, 12, 15, 16, 17, 18, 19, 22, 24, 27, 28, 29, 31, 32].includes(id);
 
 	return false;
 }
@@ -1645,12 +1609,9 @@ function getRewardValue(reward) {
 						.filter((price) => !!price)
 						.map((price) => price * 0.75);
 					break;
-				case "points":
-					value = torndata.stats.points_averagecost * 100;
+				case "Happiness":
 					break;
-				case "happiness":
-				case "energy":
-				case "nerve":
+				case "Energy":
 					break;
 				default:
 					value = -1;

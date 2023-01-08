@@ -5,10 +5,7 @@ const isOwnCompany = location.pathname === "/companies.php";
 if (!isOwnCompany) {
 	requireElement(".content #mainContainer .employees-wrap").then(() => {
 		new MutationObserver(async (mutations) => {
-			if (
-				!(mutations.length > 1) ||
-				(isOwnCompany && getHashParameters().get("option") !== "employees") ||
-				!mutations.some(
+			if ((mutations.length <= 1) || (getHashParameters().get("option") !== "employees") || !mutations.some(
 					(mutation) =>
 						mutation.addedNodes &&
 						mutation.addedNodes.length &&
@@ -16,7 +13,6 @@ if (!isOwnCompany) {
 				)
 			)
 				return;
-
 			triggerCustomListener(EVENT_CHANNELS.COMPANY_EMPLOYEES_PAGE);
 		}).observe(document.find(".content #mainContainer .content-wrapper"), { childList: true });
 	});

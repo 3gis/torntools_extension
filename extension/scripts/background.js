@@ -150,12 +150,7 @@ async function convertDatabase() {
 			if (storage?.stock_alerts)
 				newStorage.settings.notifications.types.stocks = Object.entries(storage.stock_alerts)
 					.filter(([id]) => !isNaN(id) && !!parseInt(id))
-					.map(([id, alert]) => ({
-						[id]: {
-							priceFalls: parseInt(alert.fall) || "",
-							priceReaches: parseInt(alert.reach) || "",
-						},
-					}))
+					.map(([id, alert]) => ({ [id]: { priceFalls: parseInt(alert.fall) || "", priceReaches: parseInt(alert.reach) || "" } }))
 					.reduce((prev, current) => ({ ...prev, ...current }), {});
 
 			// Reset
@@ -465,12 +460,12 @@ async function updateUserdata() {
 
 						let respect = attack.respect_gain;
 						if (respect !== 0) {
-							let hasAccurateModifiers = attack.modifiers;
+							let hasBaseRespect = attack.modifiers;
 
-							if (hasAccurateModifiers) {
+							if (hasBaseRespect) {
 								if (respect === attack.modifiers.chain_bonus) {
 									respect = 1;
-									hasAccurateModifiers = false;
+									hasBaseRespect = false;
 								} else {
 									if (attack.result === "Mugged") respect /= 0.75;
 
@@ -483,10 +478,9 @@ async function updateUserdata() {
 										attack.modifiers.chain_bonus /
 										(attack.modifiers.warlord_bonus || 1);
 								}
-								attackHistory.history[enemyId].latestFairFightModifier = attack.modifiers.fair_fight;
 							}
 
-							attackHistory.history[enemyId][hasAccurateModifiers ? "respect_base" : "respect"].push(respect);
+							attackHistory.history[enemyId][hasBaseRespect ? "respect_base" : "respect"].push(respect);
 						}
 
 						switch (attack.result) {
@@ -510,13 +504,7 @@ async function updateUserdata() {
 				}
 			}
 
-			await ttStorage.change({
-				attackHistory: {
-					lastAttack,
-					fetchData: false,
-					history: { ...attackHistory.history },
-				},
-			});
+			await ttStorage.change({ attackHistory: { lastAttack, fetchData: false, history: { ...attackHistory.history } } });
 		}
 	}
 
@@ -599,21 +587,11 @@ async function updateUserdata() {
 				});
 			} else if (previous === "Jail") {
 				await notifyUser("TornTools - Status", "You are out of the jail.", LINKS.home);
-				storeNotification({
-					title: "TornTools - Status",
-					message: "You are out of the jail.",
-					url: LINKS.home,
-					date: Date.now(),
-				});
+				storeNotification({ title: "TornTools - Status", message: "You are out of the jail.", url: LINKS.home, date: Date.now() });
 			}
 		} else {
 			await notifyUser("TornTools - Status", userdata.status.description, LINKS.home);
-			storeNotification({
-				title: "TornTools - Status",
-				message: userdata.status.description,
-				url: LINKS.home,
-				date: Date.now(),
-			});
+			storeNotification({ title: "TornTools - Status", message: userdata.status.description, url: LINKS.home, date: Date.now() });
 		}
 		await ttStorage.set({ notificationHistory });
 	}
@@ -626,12 +604,7 @@ async function updateUserdata() {
 			if (userdata.cooldowns[type] || !oldUserdata.cooldowns[type]) continue;
 
 			await notifyUser("TornTools - Cooldown", `Your ${type} cooldown has ended.`, LINKS.items);
-			storeNotification({
-				title: "TornTools - Cooldown",
-				message: `Your ${type} cooldown has ended.`,
-				url: LINKS.items,
-				date: Date.now(),
-			});
+			storeNotification({ title: "TornTools - Cooldown", message: `Your ${type} cooldown has ended.`, url: LINKS.items, date: Date.now() });
 		}
 		await ttStorage.set({ notificationHistory });
 	}
@@ -651,13 +624,7 @@ async function updateUserdata() {
 	}
 
 	async function notifyEducation() {
-		if (
-			!settings.apiUsage.user.education ||
-			!settings.notifications.types.global ||
-			!settings.notifications.types.education ||
-			!oldUserdata.education_timeleft
-		)
-			return;
+		if (!settings.apiUsage.user.education || !settings.notifications.types.global || !settings.notifications.types.education || !oldUserdata.travel) return;
 		if (userdata.education_timeleft !== 0 || oldUserdata.education_timeleft === 0) return;
 
 		await notifyUser("TornTools - Education", "You have finished your education course.", LINKS.education);
@@ -826,20 +793,8 @@ async function updateUserdata() {
 
 		const COOLDOWNS = [
 			{ name: "drug", title: "Drugs", setting: "cooldownDrug", memory: "drugs", enabled: "cooldownDrugEnabled" },
-			{
-				name: "booster",
-				title: "Boosters",
-				setting: "cooldownBooster",
-				memory: "boosters",
-				enabled: "cooldownBoosterEnabled",
-			},
-			{
-				name: "medical",
-				title: "Medical",
-				setting: "cooldownMedical",
-				memory: "medical",
-				enabled: "cooldownMedicalEnabled",
-			},
+			{ name: "booster", title: "Boosters", setting: "cooldownBooster", memory: "boosters", enabled: "cooldownBoosterEnabled" },
+			{ name: "medical", title: "Medical", setting: "cooldownMedical", memory: "medical", enabled: "cooldownMedicalEnabled" },
 		];
 
 		for (const cooldown of COOLDOWNS) {
@@ -1088,19 +1043,11 @@ async function updateStakeouts() {
 }
 
 async function updateTorndata() {
-	const data = await fetchData("torn", {
-		section: "torn",
-		selections: ["education", "honors", "items", "medals", "pawnshop", "properties", "stats"],
-	});
-	if (!isValidTorndata(data)) throw new Error("Aborted updating due to an unexpected response.");
-	data.date = Date.now();
+	torndata = await fetchData("torn", { section: "torn", selections: ["education", "honors", "items", "medals", "pawnshop", "properties", "stats"] });
+	if (!torndata || !Object.keys(torndata).length) throw new Error("Aborted updating due to an unexpected response.");
+	torndata.date = Date.now();
 
-	torndata = data;
-	await ttStorage.set({ torndata: data });
-
-	function isValidTorndata(data) {
-		return !!data && Object.keys(data).length > 0 && data.items && Object.keys(data.items).length > 0;
-	}
+	await ttStorage.set({ torndata });
 }
 
 async function updateStocks() {
@@ -1122,7 +1069,7 @@ async function updateStocks() {
 
 				await notifyUser("TornTools - Stock Alerts", message, LINKS.stocks);
 				storeNotification({ title: "TornTools -  Stock Alerts", message, url: LINKS.stocks, date: Date.now() });
-			} else if (alerts.priceReaches && oldStocks[id].current_price < alerts.priceReaches && stocks[id].current_price >= alerts.priceReaches) {
+			} else if (alerts.priceReaches && oldStocks[id].current_price < alerts.priceFalls && stocks[id].current_price >= alerts.priceReaches) {
 				const message = `(${stocks[id].acronym}) ${stocks[id].name} has reached ${formatNumber(stocks[id].current_price, {
 					currency: true,
 				})} (alert: ${formatNumber(alerts.priceReaches, { currency: true })})!`;
@@ -1454,7 +1401,7 @@ async function notifyUser(title, message, url) {
 			requireInteraction,
 			data: { settings: {} },
 		};
-		if (silent) options.silent;
+		if (silent) options.silent=true;
 
 		if (settings.notifications.link) {
 			options.data.link = url;

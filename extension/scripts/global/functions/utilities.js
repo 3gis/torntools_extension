@@ -87,7 +87,7 @@ Object.defineProperty(Object.prototype, "equals", {
 
 			if (Array.isArray(this[property]) && Array.isArray(other[property])) {
 				if (!this[property].equals(other[property])) return false;
-			} else if (this[property] instanceof Object && this[property] instanceof Object) {
+			} else if (this[property] instanceof Object){
 				if (!this[property].equals(other[property])) return false;
 			} else if (this[property] !== other[property]) return false;
 		}

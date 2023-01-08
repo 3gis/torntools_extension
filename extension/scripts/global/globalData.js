@@ -78,7 +78,7 @@ const ttStorage = new (class {
 
 	reset(key) {
 		return new Promise(async (resolve) => {
-			if (["attackHistory", "stakeouts"].includes(key)) {
+			if (["attackHistory"].includes(key)) {
 				await this.set({ [key]: getDefaultStorage(DEFAULT_STORAGE[key]) });
 
 				resolve();
@@ -507,9 +507,6 @@ const DEFAULT_STORAGE = {
 			hospital: {
 				filter: new DefaultSetting({ type: "boolean", defaultValue: true }),
 			},
-			auction: {
-				filter: new DefaultSetting({ type: "boolean", defaultValue: true }),
-			},
 			api: {
 				autoFillKey: new DefaultSetting({ type: "boolean", defaultValue: true }),
 				autoDemo: new DefaultSetting({ type: "boolean", defaultValue: true }),
@@ -523,7 +520,6 @@ const DEFAULT_STORAGE = {
 				hideThreads: new DefaultSetting({ type: "object", defaultValue: {} }),
 				highlightPosts: new DefaultSetting({ type: "object", defaultValue: {} }),
 				highlightThreads: new DefaultSetting({ type: "object", defaultValue: {} }),
-				ignoredThreads: new DefaultSetting({ type: "object", defaultValue: {} }),
 			},
 			bazaar: {
 				itemsCost: new DefaultSetting({ type: "boolean", defaultValue: true }),
@@ -568,7 +564,6 @@ const DEFAULT_STORAGE = {
 				recommendedNnb: new DefaultSetting({ type: "boolean", defaultValue: true }),
 				ocNnb: new DefaultSetting({ type: "boolean", defaultValue: true }),
 				ocTimes: new DefaultSetting({ type: "boolean", defaultValue: true }),
-				ocLastAction: new DefaultSetting({ type: "boolean", defaultValue: true }),
 				banker: new DefaultSetting({ type: "boolean", defaultValue: true }),
 				showFullInfobox: new DefaultSetting({ type: "boolean", defaultValue: true }),
 				foldableInfobox: new DefaultSetting({ type: "boolean", defaultValue: true }),
@@ -580,7 +575,6 @@ const DEFAULT_STORAGE = {
 				upgradeRequiredRespect: new DefaultSetting({ type: "boolean", defaultValue: true }),
 				memberInfo: new DefaultSetting({ type: "boolean", defaultValue: false }),
 				rankedWarFilter: new DefaultSetting({ type: "boolean", defaultValue: true }),
-				quickItems: new DefaultSetting({ type: "boolean", defaultValue: true }),
 			},
 			property: {
 				value: new DefaultSetting({ type: "boolean", defaultValue: true }),
@@ -600,7 +594,6 @@ const DEFAULT_STORAGE = {
 			attack: {
 				bonusInformation: new DefaultSetting({ type: "boolean", defaultValue: true }),
 				timeoutWarning: new DefaultSetting({ type: "boolean", defaultValue: true }),
-				fairAttack: new DefaultSetting({ type: "boolean", defaultValue: true }),
 				weaponExperience: new DefaultSetting({ type: "boolean", defaultValue: true }),
 				hideAttackButtons: new DefaultSetting({ type: "array", defaultValue: [] }),
 			},
@@ -666,7 +659,6 @@ const DEFAULT_STORAGE = {
 		external: {
 			tornstats: new DefaultSetting({ type: "boolean", defaultValue: false }),
 			yata: new DefaultSetting({ type: "boolean", defaultValue: false }),
-			prometheus: new DefaultSetting({ type: "boolean", defaultValue: false }),
 		},
 	},
 	filters: {
@@ -739,7 +731,6 @@ const DEFAULT_STORAGE = {
 			levelEnd: new DefaultSetting({ type: "number", defaultValue: 100 }),
 			special: {
 				fedded: new DefaultSetting({ type: "string", defaultValue: "both" }),
-				fallen: new DefaultSetting({ type: "string", defaultValue: "both" }),
 				traveling: new DefaultSetting({ type: "string", defaultValue: "both" }),
 				newPlayer: new DefaultSetting({ type: "string", defaultValue: "both" }),
 				onWall: new DefaultSetting({ type: "string", defaultValue: "both" }),
@@ -774,7 +765,6 @@ const DEFAULT_STORAGE = {
 			position: new DefaultSetting({ type: "string", defaultValue: "" }),
 			special: {
 				fedded: new DefaultSetting({ type: "string", defaultValue: "both" }),
-				fallen: new DefaultSetting({ type: "string", defaultValue: "both" }),
 				newPlayer: new DefaultSetting({ type: "string", defaultValue: "both" }),
 				inCompany: new DefaultSetting({ type: "string", defaultValue: "both" }),
 				isDonator: new DefaultSetting({ type: "string", defaultValue: "both" }),
@@ -802,28 +792,6 @@ const DEFAULT_STORAGE = {
 		shops: {
 			hideLoss: new DefaultSetting({ type: "boolean", defaultValue: false }),
 			hideUnder100: new DefaultSetting({ type: "boolean", defaultValue: false }),
-		},
-		auction: {
-			weapons: {
-				name: new DefaultSetting({ type: "string", defaultValue: "" }),
-				category: new DefaultSetting({ type: "string", defaultValue: "" }),
-				rarity: new DefaultSetting({ type: "string", defaultValue: "" }),
-				weaponType: new DefaultSetting({ type: "string", defaultValue: "" }),
-				damage: new DefaultSetting({ type: "string", defaultValue: "" }),
-				accuracy: new DefaultSetting({ type: "string", defaultValue: "" }),
-				weaponBonus: new DefaultSetting({ type: "array", defaultValue: [] }),
-			},
-			armor: {
-				name: new DefaultSetting({ type: "string", defaultValue: "" }),
-				rarity: new DefaultSetting({ type: "string", defaultValue: "" }),
-				defence: new DefaultSetting({ type: "string", defaultValue: "" }),
-				set: new DefaultSetting({ type: "string", defaultValue: "" }),
-			},
-			items: {
-				name: new DefaultSetting({ type: "string", defaultValue: "" }),
-				category: new DefaultSetting({ type: "string", defaultValue: "" }),
-				rarity: new DefaultSetting({ type: "string", defaultValue: "" }),
-			},
 		},
 	},
 	userdata: new DefaultSetting({ type: "object", defaultValue: {} }),
@@ -864,7 +832,6 @@ const DEFAULT_STORAGE = {
 	},
 	quick: {
 		items: new DefaultSetting({ type: "array", defaultValue: [] }),
-		factionItems: new DefaultSetting({ type: "array", defaultValue: [] }),
 		crimes: new DefaultSetting({ type: "array", defaultValue: [] }),
 		jail: new DefaultSetting({ type: "array", defaultValue: [] }),
 	},
@@ -884,7 +851,6 @@ const CUSTOM_LINKS_PRESET = {
 	"Points Market": { link: "https://www.torn.com/pmarket.php" },
 	Raceway: { link: "https://www.torn.com/loader.php?sid=racing" },
 	"Travel Agency": { link: "https://www.torn.com/travelagency.php" },
-	"Christmas Town : Maps": { link: "https://www.torn.com/christmas_town.php#/mymaps" },
 };
 
 const HIGHLIGHT_PLACEHOLDERS = [{ name: "$player", value: () => userdata.name || "", description: "Your player name." }];
